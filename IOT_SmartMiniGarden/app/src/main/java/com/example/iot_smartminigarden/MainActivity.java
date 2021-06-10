@@ -31,7 +31,6 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.gson.Gson;
 import com.example.iot_smartminigarden.model.Led;
-import com.example.iot_smartminigarden.mqtt.MqttClientConnect;
 import com.example.iot_smartminigarden.retrofit.InterfaceNetwork;
 import com.example.iot_smartminigarden.retrofit.RetrofitResponse;
 
@@ -61,17 +60,12 @@ public class MainActivity extends AppCompatActivity{
     Switch switchLight;
     ImageView imageWaterring;
     Switch switchWatering;
-    RecyclerView.Adapter adapterLed;
-    RecyclerView.Adapter adapterSprinkler;
     int themeIdcurrent;
-    List<Entry> entries;
     List<Led> leds;
     List<Sprinkler> sprinklers;
-    MqttClientConnect mqttClientConnect;
     MqttAndroidClient client;
     public static Retrofit retrofit;
     public InterfaceNetwork interfaceNetwork;
-    ConstraintLayout constraintLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,45 +196,6 @@ public class MainActivity extends AppCompatActivity{
 
         leds = new ArrayList<Led>();
         sprinklers = new ArrayList<Sprinkler>();
-//        mqtt
-        mqttClientConnect = MqttClientConnect.getInstance();
-        mqttClientConnect.setContext(this);
-        try {
-            IMqttToken token = mqttClientConnect.mqttConnect1();
-            client = mqttClientConnect.getClient1();
-            token.setActionCallback(new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    mqttClientConnect.sub1(TOPIC_LED);
-
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Log.d(TOPIC_LED, "Token tắt");
-                }
-            });
-            client.setCallback(new MqttCallback() {
-                @Override
-                public void connectionLost(Throwable cause) {
-
-                }
-
-                @Override
-                public void messageArrived(String topic, MqttMessage message) throws Exception {
-                    JSONObject jsonObject = new JSONObject(message.toString());
-                    Log.d(topic, message.toString() + "   dfdfgfd" + jsonObject.getInt("type"));
-
-                }
-
-                @Override
-                public void deliveryComplete(IMqttDeliveryToken token) {
-
-                }
-            });
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

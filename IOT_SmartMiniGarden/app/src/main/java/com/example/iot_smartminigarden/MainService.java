@@ -21,9 +21,6 @@ public class  MainService extends Service {
     public void onCreate() {
         super.onCreate();
         innitFore();
-        registerReceiver(new MqttConnectBroadcast(), new IntentFilter(MqttConnectBroadcast.BROAD_CAST_NAME));
-        MqttConnectBroadcast.start(this);
-        Log.d("mqtt", "on service");
     }
     public void innitFore(){
         NotificationSmartMiniGarden.createChannel(this,"MainService","main_service", NotificationManager.IMPORTANCE_HIGH);

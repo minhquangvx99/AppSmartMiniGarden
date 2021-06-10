@@ -41,6 +41,6 @@ public class Sprinkler {
     }
 
     //public static String URL = "localhost:3000/getStateBulb?id=1";
-    public static String URL = "http://localhost:8080/getStateBulb?id=1";
+    public static String URL = "http://localhost:8080/openLight?id=16&statusLed=on";
 }
 
