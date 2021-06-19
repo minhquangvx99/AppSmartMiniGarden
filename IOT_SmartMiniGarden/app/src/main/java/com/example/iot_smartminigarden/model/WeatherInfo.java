@@ -8,9 +8,9 @@ public class WeatherInfo {
     @SerializedName("time")
     private String time;
     @SerializedName("temperature")
-    private String temperature;
+    private int temperature;
     @SerializedName("humidity")
-    private String humidity;
+    private int humidity;
 
     public int getId() {
         return id;
@@ -28,19 +28,19 @@ public class WeatherInfo {
         this.time = time;
     }
 
-    public String getTemperature() {
+    public int getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(String temperature) {
+    public void setTemperature(int temperature) {
         this.temperature = temperature;
     }
 
-    public String getHumidity() {
+    public int getHumidity() {
         return humidity;
     }
 
-    public void setHumidity(String humidity) {
+    public void setHumidity(int humidity) {
         this.humidity = humidity;
     }
 }

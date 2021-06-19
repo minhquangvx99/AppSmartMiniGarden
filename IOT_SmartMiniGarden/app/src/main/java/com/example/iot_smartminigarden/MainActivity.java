@@ -18,9 +18,11 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.iot_smartminigarden.model.Sprinkler;
+import com.example.iot_smartminigarden.model.WeatherInfo;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -61,11 +63,12 @@ public class MainActivity extends AppCompatActivity{
     ImageView imageWaterring;
     Switch switchWatering;
     int themeIdcurrent;
-    List<Led> leds;
-    List<Sprinkler> sprinklers;
+    WeatherInfo weatherInfos;
     MqttAndroidClient client;
     public static Retrofit retrofit;
     public InterfaceNetwork interfaceNetwork;
+    TextView tvTemperatureValue;
+    TextView tvHumidityValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +92,9 @@ public class MainActivity extends AppCompatActivity{
 //        innit retrofit
         retrofit = RetrofitResponse.getInstance().getRetrofit();
         interfaceNetwork = retrofit.create(InterfaceNetwork.class);
+
+// load data
+        loadWeatherInfo();
 
         imageLight = findViewById(R.id.imageLight);
         switchLight = findViewById(R.id.switchLight);
@@ -136,15 +142,13 @@ public class MainActivity extends AppCompatActivity{
                     };
                     countDownTimer.start() ;
                 }
-                leds.forEach((e) -> {
-                    Log.d("tag", e.toString());
-                });
             }
         });
 
         imageWaterring = findViewById(R.id.imageWatering);
         switchWatering = findViewById(R.id.switchWatering);
-
+        tvTemperatureValue = findViewById(R.id.textTemperatureValue);
+        tvHumidityValue = findViewById(R.id.textHumidityValue);
 
         Sprinkler sprinkler = new Sprinkler(111,1); // value 1 on, 0 off
         if(led.getValue() == 1){
@@ -188,14 +192,8 @@ public class MainActivity extends AppCompatActivity{
                     };
                     countDownTimer.start() ;
                 }
-                sprinklers.forEach((e) -> {
-                    Log.d("tag", e.toString());
-                });
             }
         });
-
-        leds = new ArrayList<Led>();
-        sprinklers = new ArrayList<Sprinkler>();
     }
 
     @Override
@@ -234,6 +232,23 @@ public class MainActivity extends AppCompatActivity{
         editor.putString(key, value);
         // Save.
         editor.apply();
+    }
+
+    public void loadWeatherInfo(){
+        interfaceNetwork.getWeatherInfo().enqueue(new Callback<WeatherInfo>(){
+            @Override
+            public void onResponse(Call<WeatherInfo> call, Response<WeatherInfo> response) {
+                weatherInfos = response.body();
+                tvTemperatureValue.setText(String.valueOf(weatherInfos.getTemperature()));
+                tvHumidityValue.setText(String.valueOf(weatherInfos.getHumidity()));
+            }
+
+            @Override
+            public void onFailure(Call<WeatherInfo> call, Throwable t) {
+                tvTemperatureValue.setText("Không có dữ liệu");
+                tvHumidityValue.setText("Không có dữ liệu");
+            }
+        });
     }
 
     public void timer(View view) {
