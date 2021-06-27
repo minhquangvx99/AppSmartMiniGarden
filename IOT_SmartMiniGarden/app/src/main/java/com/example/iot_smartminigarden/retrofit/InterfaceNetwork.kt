@@ -3,7 +3,6 @@ package com.example.iot_smartminigarden.retrofit
 import com.example.iot_smartminigarden.model.Led
 import com.example.iot_smartminigarden.model.Sprinkler
 import com.example.iot_smartminigarden.model.WeatherInfo
-import java.util.List;
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

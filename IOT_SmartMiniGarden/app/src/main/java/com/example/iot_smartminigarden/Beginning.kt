@@ -2,19 +2,17 @@ package com.example.iot_smartminigarden;
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
-import android.view.Window
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import com.example.iot_smartminigarden.config.Config
-import kotlinx.android.synthetic.main.activity_begging.*
+import kotlinx.android.synthetic.main.activity_beginning.*
 
 
-class Begging : AppCompatActivity() {
+class Beginning : AppCompatActivity() {
     var token: String = ""
     override fun onStart() {
         super.onStart()
@@ -22,7 +20,7 @@ class Begging : AppCompatActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_begging)
+        setContentView(R.layout.activity_beginning)
 
         val animation: Animation
         animation = AnimationUtils.loadAnimation(applicationContext,
@@ -37,11 +35,11 @@ class Begging : AppCompatActivity() {
 
             override fun onFinish() {
                 if (token.equals("true")) {
-                    var intent = Intent(this@Begging, MainActivity::class.java)
+                    var intent = Intent(this@Beginning, MainActivity::class.java)
                     startActivity(intent)
                     finish()
                 } else {
-                    var intent = Intent(this@Begging, Login::class.java)
+                    var intent = Intent(this@Beginning, Login::class.java)
                     startActivity(intent)
                     finish()
                 }

@@ -7,7 +7,7 @@ public class RetrofitResponse {
     private Retrofit mRetrofit;
     private static final RetrofitResponse outInstance = new RetrofitResponse();
     private RetrofitResponse(){
-        String url ="http://localhost:8080/";
+        String url ="http://localhost:8081/";
         mRetrofit=new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(url)

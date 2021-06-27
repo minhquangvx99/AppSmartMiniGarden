@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "IOT";
+    private static final String DATABASE_NAME = "smarthome";
     private static final int DATABASE_VERSION = 1;
 
     public DatabaseHandler(Context context) {
