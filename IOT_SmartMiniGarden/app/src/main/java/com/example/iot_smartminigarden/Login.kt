@@ -30,40 +30,17 @@ class Login : AppCompatActivity() {
         interfaceNetwork = MainActivity.retrofit.create(InterfaceNetwork::class.java)
         textWarning.text = ""
         btnLogin.setOnClickListener(){
-            doSave(inputUsername.text.toString().trim(), inputPassword.text.toString().trim(), "true");
-            textWarning.setTextColor(Color.GREEN)
-            textWarning.text = "Đăng nhập Thành công"
-            startActivity(Intent(this@Login,MainActivity::class.java))
-            finish()
-            /*if (inputUsername.text.toString().trim().length>0 && inputPassword.text.toString().trim().length>0){
-                Log.d("abcdefg",inputUsername.text.toString().trim() + inputPassword.text.toString().trim())
-                interfaceNetwork?.login(inputUsername.text.toString().trim(), inputPassword.text.toString().trim())?.enqueue(object : Callback<Boolean> {
-                    override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
-                        if(response.body() == true){
-                            doSave(inputUsername.text.toString().trim(), inputPassword.text.toString().trim(), "true");
-                            textWarning.setTextColor(Color.GREEN)
-                            textWarning.text = "Đăng nhập Thành công"
-                            startActivity(Intent(this@Login,MainActivity::class.java))
-                            finish()
-
-                        } else if(response.body() == false){
-                            textWarning.setTextColor(Color.RED)
-                            textWarning.text = "Đăng nhập thất bại"
-                            doSaveShared(FILE_USER_TOKEN_SESSION,"false");
-                        }
-
-                    }
-
-                    override fun onFailure(call: Call<Boolean>, t: Throwable) {
-                        TODO("Not yet implemented")
-                    }
-
-                });
+            if (inputUsername.text.toString().trim().length>0 && inputPassword.text.toString().trim().length>0){
+                doSave(inputUsername.text.toString().trim(), inputPassword.text.toString().trim(), "true");
+                textWarning.setTextColor(Color.GREEN)
+                textWarning.text = "Đăng nhập Thành công"
+                startActivity(Intent(this@Login,MainActivity::class.java))
+                finish()
             }
             else{
                 textWarning.setTextColor(Color.WHITE)
                 textWarning.text = "Vui lòng nhập đủ thông tin"
-            }*/
+            }
         }
     }
     private fun loadToken() : String? {
