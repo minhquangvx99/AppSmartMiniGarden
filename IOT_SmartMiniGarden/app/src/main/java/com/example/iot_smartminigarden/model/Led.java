@@ -6,9 +6,9 @@ public class Led {
     @SerializedName("device_id")
     private int id;
     @SerializedName("value")
-    private int value;
+    private String value;
 
-    public Led(int id, int value) {
+    public Led(int id, String value) {
         this.id = id;
         this.value = value;
     }
@@ -24,11 +24,11 @@ public class Led {
         this.id = id;
     }
 
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
@@ -40,6 +40,6 @@ public class Led {
                 '}';
     }
 
-    public static String URL = "http://localhost:8080/openLight?id=16&statusLed=on";
+    public static String URL = "http://localhost:8081/openLight?id=16&statusLed=on";
 }
 

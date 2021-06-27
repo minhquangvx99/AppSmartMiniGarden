@@ -100,8 +100,8 @@ public class MainActivity extends AppCompatActivity{
         switchLight = findViewById(R.id.switchLight);
 
 
-        Led led = new Led(111,1); // value 1 on, 0 off
-        if(led.getValue() == 1){
+        Led led = new Led(16,"on");
+        if(led.getValue() == "on"){
             switchLight.setChecked(true);
             imageLight.setImageResource(R.drawable.ic_light_on);
         }else {
@@ -112,8 +112,19 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    led.setValue(1);
+                    led.setValue("on");
                     imageLight.setImageResource(R.drawable.ic_light_on);
+                    interfaceNetwork.turnLed(led.getId(),led.getValue()).enqueue(new Callback<Void>(){
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            Toast.makeText(MainActivity.this, "Bật thành công", Toast.LENGTH_SHORT);
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Toast.makeText(MainActivity.this, "Bật không thành công", Toast.LENGTH_SHORT);
+                        }
+                    });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
                         @Override
                         public void onTick(long l) {
@@ -127,8 +138,19 @@ public class MainActivity extends AppCompatActivity{
                     };
                     countDownTimer.start() ;
                 } else {
-                    led.setValue(0);
+                    led.setValue("off");
                     imageLight.setImageResource(R.drawable.ic_light_off);
+                    interfaceNetwork.turnLed(led.getId(),led.getValue()).enqueue(new Callback<Void>(){
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            Toast.makeText(MainActivity.this, "Tắt thành công", Toast.LENGTH_SHORT);
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Toast.makeText(MainActivity.this, "Tắt không thành công", Toast.LENGTH_SHORT);
+                        }
+                    });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
                         @Override
                         public void onTick(long l) {
@@ -150,8 +172,8 @@ public class MainActivity extends AppCompatActivity{
         tvTemperatureValue = findViewById(R.id.textTemperatureValue);
         tvHumidityValue = findViewById(R.id.textHumidityValue);
 
-        Sprinkler sprinkler = new Sprinkler(111,1); // value 1 on, 0 off
-        if(led.getValue() == 1){
+        Sprinkler sprinkler = new Sprinkler(16,"on");
+        if(led.getValue() == "on"){
             switchWatering.setChecked(true);
             imageWaterring.setImageResource(R.drawable.ic_sprinkler_on);
         }else {
@@ -162,8 +184,19 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    led.setValue(1);
+                    sprinkler.setValue("on");
                     imageWaterring.setImageResource(R.drawable.ic_sprinkler_on);
+                    interfaceNetwork.turnSprinkler(sprinkler.getId(),sprinkler.getValue()).enqueue(new Callback<Void>(){
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            Toast.makeText(MainActivity.this, "Bật thành công", Toast.LENGTH_SHORT);
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Toast.makeText(MainActivity.this, "Bật không thành công", Toast.LENGTH_SHORT);
+                        }
+                    });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
                         @Override
                         public void onTick(long l) {
@@ -177,8 +210,19 @@ public class MainActivity extends AppCompatActivity{
                     };
                     countDownTimer.start() ;
                 } else {
-                    led.setValue(0);
+                    sprinkler.setValue("off");
                     imageWaterring.setImageResource(R.drawable.ic_sprinkler_off);
+                    interfaceNetwork.turnSprinkler(sprinkler.getId(),sprinkler.getValue()).enqueue(new Callback<Void>(){
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            Toast.makeText(MainActivity.this, "Tắt thành công", Toast.LENGTH_SHORT);
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Toast.makeText(MainActivity.this, "Tắt không thành công", Toast.LENGTH_SHORT);
+                        }
+                    });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
                         @Override
                         public void onTick(long l) {
