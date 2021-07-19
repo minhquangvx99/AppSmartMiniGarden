@@ -39,7 +39,5 @@ public class Sprinkler {
                 ", value=" + value +
                 '}';
     }
-
-    public static String URL = "http://localhost:8081/openLight?id=16&statusLed=on";
 }
 

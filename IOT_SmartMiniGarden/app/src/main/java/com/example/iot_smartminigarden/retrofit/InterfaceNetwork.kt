@@ -9,13 +9,19 @@ import retrofit2.http.Query
 
 public interface InterfaceNetwork {
     @GET("openLight")
-    fun turnLed(@Query("id") id: Int, @Query("value") statusLed: String): Call<Void>
+    fun turnOnLed(): Call<Void>
 
     @GET("openLight")
-    fun turnSprinkler(@Query("id") id: Int, @Query("value") statusLed: String): Call<Void>
+    fun turnOnSprinkler(): Call<Void>
+
+    @GET("closeLight")
+    fun turnOffLed(): Call<Void>
+
+    @GET("closeLight")
+    fun turnOffSprinkler(): Call<Void>
 
     @GET("GetAllWeatherInfo")
-    fun getWeatherInfo(): Call<WeatherInfo>
+    fun getWeatherInfo(): Call<List<WeatherInfo>>
 
     @GET("login")
     fun login(@Query("username") username: String, @Query("password") password: String): Call<Boolean>

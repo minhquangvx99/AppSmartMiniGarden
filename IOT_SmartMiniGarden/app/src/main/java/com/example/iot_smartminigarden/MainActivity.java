@@ -70,6 +70,28 @@ public class MainActivity extends AppCompatActivity{
     TextView tvTemperatureValue;
     TextView tvHumidityValue;
 
+    public void loadWeatherInfo(){
+        interfaceNetwork.getWeatherInfo()
+       .enqueue(new Callback<List<WeatherInfo>>(){
+            @Override
+            public void onResponse(Call<List<WeatherInfo>> call, Response<List<WeatherInfo>> response) {
+                List<WeatherInfo> wfs = response.body();
+                weatherInfos = response.body().get(wfs.size()-1);
+
+                Log.d("xxxxxxxxxxxxxxxxxxx", response.body().toString());
+                tvTemperatureValue.setText(String.valueOf(weatherInfos.getTemperature()));
+                tvHumidityValue.setText(String.valueOf(weatherInfos.getHumidity()));
+            }
+
+            @Override
+            public void onFailure(Call<List<WeatherInfo>> call, Throwable t) {
+                t.printStackTrace();
+                Log.d("xxxxxxxxxxxxxxxxxxx", t.getMessage());
+                tvTemperatureValue.setText("Không có dữ liệu");
+                tvHumidityValue.setText("Không có dữ liệu");
+            }
+        });
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,15 +136,15 @@ public class MainActivity extends AppCompatActivity{
                 if (isChecked) {
                     led.setValue("on");
                     imageLight.setImageResource(R.drawable.ic_light_on);
-                    interfaceNetwork.turnLed(led.getId(),led.getValue()).enqueue(new Callback<Void>(){
+                    interfaceNetwork.turnOnLed().enqueue(new Callback<Void>(){
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
-                            Toast.makeText(MainActivity.this, "Bật thành công", Toast.LENGTH_SHORT);
+                            Toast.makeText(MainActivity.this, "Bật thành công", Toast.LENGTH_SHORT).show();;
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
-                            Toast.makeText(MainActivity.this, "Bật không thành công", Toast.LENGTH_SHORT);
+                            Toast.makeText(MainActivity.this, "Bật không thành công", Toast.LENGTH_SHORT).show();;
                         }
                     });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
@@ -140,15 +162,15 @@ public class MainActivity extends AppCompatActivity{
                 } else {
                     led.setValue("off");
                     imageLight.setImageResource(R.drawable.ic_light_off);
-                    interfaceNetwork.turnLed(led.getId(),led.getValue()).enqueue(new Callback<Void>(){
+                    interfaceNetwork.turnOffLed().enqueue(new Callback<Void>(){
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
-                            Toast.makeText(MainActivity.this, "Tắt thành công", Toast.LENGTH_SHORT);
+                            Toast.makeText(MainActivity.this, "Tắt thành công", Toast.LENGTH_SHORT).show();;
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
-                            Toast.makeText(MainActivity.this, "Tắt không thành công", Toast.LENGTH_SHORT);
+                            Toast.makeText(MainActivity.this, "Tắt không thành công", Toast.LENGTH_SHORT).show();;
                         }
                     });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
@@ -186,15 +208,15 @@ public class MainActivity extends AppCompatActivity{
                 if (isChecked) {
                     sprinkler.setValue("on");
                     imageWaterring.setImageResource(R.drawable.ic_sprinkler_on);
-                    interfaceNetwork.turnSprinkler(sprinkler.getId(),sprinkler.getValue()).enqueue(new Callback<Void>(){
+                    interfaceNetwork.turnOnSprinkler().enqueue(new Callback<Void>(){
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
-                            Toast.makeText(MainActivity.this, "Bật thành công", Toast.LENGTH_SHORT);
+                            Toast.makeText(MainActivity.this, "Bật thành công", Toast.LENGTH_SHORT).show();;
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
-                            Toast.makeText(MainActivity.this, "Bật không thành công", Toast.LENGTH_SHORT);
+                            Toast.makeText(MainActivity.this, "Bật không thành công", Toast.LENGTH_SHORT).show();;
                         }
                     });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
@@ -212,15 +234,15 @@ public class MainActivity extends AppCompatActivity{
                 } else {
                     sprinkler.setValue("off");
                     imageWaterring.setImageResource(R.drawable.ic_sprinkler_off);
-                    interfaceNetwork.turnSprinkler(sprinkler.getId(),sprinkler.getValue()).enqueue(new Callback<Void>(){
+                    interfaceNetwork.turnOffSprinkler().enqueue(new Callback<Void>(){
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
-                            Toast.makeText(MainActivity.this, "Tắt thành công", Toast.LENGTH_SHORT);
+                            Toast.makeText(MainActivity.this, "Tắt thành công", Toast.LENGTH_SHORT).show();;
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
-                            Toast.makeText(MainActivity.this, "Tắt không thành công", Toast.LENGTH_SHORT);
+                            Toast.makeText(MainActivity.this, "Tắt không thành công", Toast.LENGTH_SHORT).show();;
                         }
                     });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
@@ -276,23 +298,6 @@ public class MainActivity extends AppCompatActivity{
         editor.putString(key, value);
         // Save.
         editor.apply();
-    }
-
-    public void loadWeatherInfo(){
-        interfaceNetwork.getWeatherInfo().enqueue(new Callback<WeatherInfo>(){
-            @Override
-            public void onResponse(Call<WeatherInfo> call, Response<WeatherInfo> response) {
-                weatherInfos = response.body();
-                tvTemperatureValue.setText(String.valueOf(weatherInfos.getTemperature()));
-                tvHumidityValue.setText(String.valueOf(weatherInfos.getHumidity()));
-            }
-
-            @Override
-            public void onFailure(Call<WeatherInfo> call, Throwable t) {
-                tvTemperatureValue.setText("Không có dữ liệu");
-                tvHumidityValue.setText("Không có dữ liệu");
-            }
-        });
     }
 
     public void timer(View view) {

@@ -4,15 +4,15 @@ import com.google.gson.annotations.SerializedName;
 
 public class WeatherInfo {
     @SerializedName("id")
-    private int id;
+    private float id;
     @SerializedName("time")
     private String time;
     @SerializedName("temperature")
-    private int temperature;
+    private float temperature;
     @SerializedName("humidity")
-    private int humidity;
+    private float humidity;
 
-    public int getId() {
+    public float getId() {
         return id;
     }
 
@@ -28,19 +28,19 @@ public class WeatherInfo {
         this.time = time;
     }
 
-    public int getTemperature() {
+    public float getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(int temperature) {
+    public void setTemperature(float temperature) {
         this.temperature = temperature;
     }
 
-    public int getHumidity() {
+    public float getHumidity() {
         return humidity;
     }
 
-    public void setHumidity(int humidity) {
+    public void setHumidity(float humidity) {
         this.humidity = humidity;
     }
 }
