@@ -4,11 +4,11 @@ import com.google.gson.annotations.SerializedName;
 
 public class Led {
     @SerializedName("device_id")
-    private float id;
+    private int id;
     @SerializedName("value")
     private String value;
 
-    public Led(float id, String value) {
+    public Led(int id, String value) {
         this.id = id;
         this.value = value;
     }
@@ -16,7 +16,7 @@ public class Led {
     public Led() {
     }
 
-    public float getId() {
+    public int getId() {
         return id;
     }
 

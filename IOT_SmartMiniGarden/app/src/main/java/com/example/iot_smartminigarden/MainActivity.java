@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
     Switch switchWatering;
     int themeIdcurrent;
     WeatherInfo weatherInfos;
+    Sprinkler sprinkler= new Sprinkler();
+    Led led =new Led();
     StatusInfo statusInfos;
     MqttAndroidClient client;
     public static Retrofit retrofit;
@@ -73,9 +75,9 @@ public class MainActivity extends AppCompatActivity {
     TextView tvTemperatureValue;
     TextView tvHumidityValue;
     Runnable timedTask;
-    float idLed;
+    int idLed;
     String statusLed;
-    float idSprinkler;
+    int idSprinkler;
     String statusSprinkler;
 
     public void loadWeatherInfo() {
@@ -98,6 +100,54 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void loadControls() {
+        interfaceNetwork.controls().enqueue(new Callback<List<StatusInfo>>() {
+            @Override
+            public void onResponse(Call<List<StatusInfo>> call, Response<List<StatusInfo>> response) {
+                List<StatusInfo> stts = response.body();
+
+                statusInfos = response.body().get(0);
+                Log.d("xxxxxxxxxxxxxxxxxxx", response.body().toString());
+                idLed = statusInfos.getId();
+                led.setId(idLed);
+                statusLed = statusInfos.getStatusLed();
+                led.setValue(statusLed);
+
+                if (led.getValue().equals("on")) {
+                    switchLight.setChecked(true);
+                    imageLight.setImageResource(R.drawable.ic_light_on);
+                } else {
+                    switchLight.setChecked(false);
+                    imageLight.setImageResource(R.drawable.ic_light_off);
+                }
+
+                statusInfos = response.body().get(stts.size() - 1);
+                Log.d("xxxxxxxxxxxxxxxxxxx", response.body().toString());
+                idSprinkler = Integer.parseInt(String.valueOf(statusInfos.getId()));
+                sprinkler.setId(idSprinkler);
+                statusSprinkler = statusInfos.getStatusLed();
+                sprinkler.setValue(statusSprinkler);
+                if (sprinkler.getValue().equals("on")) {
+                    switchWatering.setChecked(true);
+                    imageWaterring.setImageResource(R.drawable.ic_sprinkler_on);
+                } else {
+                    switchWatering.setChecked(false);
+                    imageWaterring.setImageResource(R.drawable.ic_sprinkler_off);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<StatusInfo>> call, Throwable t) {
+                t.printStackTrace();
+                Log.d("xxxxxxxxxxxxxxxxxxx", t.getMessage());
+                led.setId(16);
+                led.setValue("off");
+                sprinkler.setId(17);
+                sprinkler.setValue("off");
+            }
+        });
+    }
+
     private void refresh() {
         Handler handler = new Handler();
         timedTask = new Runnable() {
@@ -109,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         handler.post(timedTask);
-
     }
 
     @Override
@@ -136,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
         interfaceNetwork = retrofit.create(InterfaceNetwork.class);
 
 // load data
+        loadControls();
         loadWeatherInfo();
         refresh() ;
         imageLight = findViewById(R.id.imageLight);
@@ -145,42 +195,7 @@ public class MainActivity extends AppCompatActivity {
         tvTemperatureValue = findViewById(R.id.textTemperatureValue);
         tvHumidityValue = findViewById(R.id.textHumidityValue);
 
-        interfaceNetwork.controls().enqueue(new Callback<List<StatusInfo>>() {
-            @Override
-            public void onResponse(Call<List<StatusInfo>> call, Response<List<StatusInfo>> response) {
-                List<StatusInfo> stts = response.body();
-                statusInfos = response.body().get(0);
-                Log.d("xxxxxxxxxxxxxxxxxxx", response.body().toString());
-                idLed = statusInfos.getId();
-                statusLed = statusInfos.getStatusLed();
-
-                statusInfos = response.body().get(stts.size()-1);
-                Log.d("xxxxxxxxxxxxxxxxxxx", response.body().toString());
-                idSprinkler = statusInfos.getId();
-                statusSprinkler = statusInfos.getStatusLed();
-            }
-
-            @Override
-            public void onFailure(Call<List<StatusInfo>> call, Throwable t) {
-                t.printStackTrace();
-                Log.d("xxxxxxxxxxxxxxxxxxx", t.getMessage());
-                idLed = 16;
-                statusLed = "off";
-                idSprinkler = 17;
-                statusSprinkler = "off";
-            }
-        });
-
-        Led led = new Led(idLed,statusLed);
-        Sprinkler sprinkler= new Sprinkler(idSprinkler,statusSprinkler);
-
-        if (led.getValue() == "on") {
-            switchLight.setChecked(true);
-            imageLight.setImageResource(R.drawable.ic_light_on);
-        } else {
-            switchLight.setChecked(false);
-            imageLight.setImageResource(R.drawable.ic_light_off);
-        }
+        Log.d("............",String.valueOf(led.getValue()));
         switchLight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -191,13 +206,11 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
                             Toast.makeText(MainActivity.this, "Bật thành công", Toast.LENGTH_SHORT).show();
-                            ;
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
                             Toast.makeText(MainActivity.this, "Bật không thành công", Toast.LENGTH_SHORT).show();
-                            ;
                         }
                     });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
@@ -219,13 +232,11 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
                             Toast.makeText(MainActivity.this, "Tắt thành công", Toast.LENGTH_SHORT).show();
-                            ;
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
                             Toast.makeText(MainActivity.this, "Tắt không thành công", Toast.LENGTH_SHORT).show();
-                            ;
                         }
                     });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
@@ -244,13 +255,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if (sprinkler.getValue() == "on") {
-            switchWatering.setChecked(true);
-            imageWaterring.setImageResource(R.drawable.ic_sprinkler_on);
-        } else {
-            switchWatering.setChecked(false);
-            imageWaterring.setImageResource(R.drawable.ic_sprinkler_off);
-        }
         switchWatering.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -261,13 +265,11 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
                             Toast.makeText(MainActivity.this, "Bật thành công", Toast.LENGTH_SHORT).show();
-                            ;
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
                             Toast.makeText(MainActivity.this, "Bật không thành công", Toast.LENGTH_SHORT).show();
-                            ;
                         }
                     });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
@@ -289,13 +291,11 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
                             Toast.makeText(MainActivity.this, "Tắt thành công", Toast.LENGTH_SHORT).show();
-                            ;
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
                             Toast.makeText(MainActivity.this, "Tắt không thành công", Toast.LENGTH_SHORT).show();
-                            ;
                         }
                     });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {

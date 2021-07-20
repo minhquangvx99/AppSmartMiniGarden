@@ -11,16 +11,16 @@ import retrofit2.http.Query
 
 public interface InterfaceNetwork {
     @PUT("openLight")
-    fun turnOnLed(@Query("id") id: Float, @Query("statusLed") statusLed: String): Call<Void>
+    fun turnOnLed(@Query("id") id: Int, @Query("statusLed") statusLed: String): Call<Void>
 
     @PUT("openLight")
-    fun turnOnSprinkler(@Query("id") id: Float, @Query("statusLed") statusLed: String): Call<Void>
+    fun turnOnSprinkler(@Query("id") id: Int, @Query("statusLed") statusLed: String): Call<Void>
 
     @PUT("openLight")
-    fun turnOffLed(@Query("id") id: Float, @Query("statusLed") statusLed: String): Call<Void>
+    fun turnOffLed(@Query("id") id: Int, @Query("statusLed") statusLed: String): Call<Void>
 
     @PUT("openLight")
-    fun turnOffSprinkler(@Query("id") id: Float, @Query("statusLed") statusLed: String): Call<Void>
+    fun turnOffSprinkler(@Query("id") id: Int, @Query("statusLed") statusLed: String): Call<Void>
 
     @GET("GetWeatherNow")
     fun getWeatherInfo(): Call<WeatherInfo>

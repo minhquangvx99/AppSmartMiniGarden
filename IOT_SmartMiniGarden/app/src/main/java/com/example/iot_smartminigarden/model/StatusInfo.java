@@ -4,11 +4,11 @@ import com.google.gson.annotations.SerializedName;
 
 public class StatusInfo {
     @SerializedName("id")
-    private float id;
+    private int id;
     @SerializedName("statusLed")
     private String statusLed;
 
-    public float getId() {
+    public int getId() {
         return id;
     }
 
@@ -23,5 +23,4 @@ public class StatusInfo {
     public void setStatusLed(String statusLed) {
         this.statusLed = statusLed;
     }
-
 }

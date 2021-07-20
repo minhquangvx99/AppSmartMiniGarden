@@ -4,11 +4,11 @@ import com.google.gson.annotations.SerializedName;
 
 public class Sprinkler {
     @SerializedName("device_id")
-    private float id;
+    private int id;
     @SerializedName("value")
     private String value;
 
-    public Sprinkler(float id, String value) {
+    public Sprinkler(int id, String value) {
         this.id = id;
         this.value = value;
     }
@@ -16,7 +16,7 @@ public class Sprinkler {
     public Sprinkler() {
     }
 
-    public float getId() {
+    public int getId() {
         return id;
     }
 

@@ -16,7 +16,7 @@ public class WeatherInfo {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(float id) {
         this.id = id;
     }
 
