@@ -7,7 +7,7 @@ public class RetrofitResponse {
     private Retrofit mRetrofit;
     private static final RetrofitResponse outInstance = new RetrofitResponse();
     private RetrofitResponse(){
-        String url ="http://192.168.0.108:8081/";
+        String url ="http://192.168.0.108:8083/";
         mRetrofit=new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(url)
@@ -18,14 +18,6 @@ public class RetrofitResponse {
     }
     public Retrofit getRetrofit(){
         return mRetrofit;
-    }
-
-    public static Retrofit getRetrofitReponse(){
-        String url ="http://192.168.0.8:8081/";
-        return new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(url)
-                .build();
     }
 }
 

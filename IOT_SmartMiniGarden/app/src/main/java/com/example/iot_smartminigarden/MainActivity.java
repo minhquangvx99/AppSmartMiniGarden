@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.iot_smartminigarden.model.Sprinkler;
+import com.example.iot_smartminigarden.model.StatusInfo;
 import com.example.iot_smartminigarden.model.WeatherInfo;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -57,34 +59,37 @@ import retrofit2.Retrofit;
 
 import static com.example.iot_smartminigarden.config.Config.*;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
     ImageView imageLight;
     Switch switchLight;
     ImageView imageWaterring;
     Switch switchWatering;
     int themeIdcurrent;
     WeatherInfo weatherInfos;
+    StatusInfo statusInfos;
     MqttAndroidClient client;
     public static Retrofit retrofit;
     public InterfaceNetwork interfaceNetwork;
     TextView tvTemperatureValue;
     TextView tvHumidityValue;
+    Runnable timedTask;
+    float idLed;
+    String statusLed;
+    float idSprinkler;
+    String statusSprinkler;
 
-    public void loadWeatherInfo(){
-        interfaceNetwork.getWeatherInfo()
-       .enqueue(new Callback<List<WeatherInfo>>(){
+    public void loadWeatherInfo() {
+        interfaceNetwork.getWeatherInfo().enqueue(new Callback<WeatherInfo>() {
             @Override
-            public void onResponse(Call<List<WeatherInfo>> call, Response<List<WeatherInfo>> response) {
-                List<WeatherInfo> wfs = response.body();
-                weatherInfos = response.body().get(wfs.size()-1);
-
+            public void onResponse(Call<WeatherInfo> call, Response<WeatherInfo> response) {
+                weatherInfos = response.body();
                 Log.d("xxxxxxxxxxxxxxxxxxx", response.body().toString());
                 tvTemperatureValue.setText(String.valueOf(weatherInfos.getTemperature()));
                 tvHumidityValue.setText(String.valueOf(weatherInfos.getHumidity()));
             }
 
             @Override
-            public void onFailure(Call<List<WeatherInfo>> call, Throwable t) {
+            public void onFailure(Call<WeatherInfo> call, Throwable t) {
                 t.printStackTrace();
                 Log.d("xxxxxxxxxxxxxxxxxxx", t.getMessage());
                 tvTemperatureValue.setText("Không có dữ liệu");
@@ -92,14 +97,29 @@ public class MainActivity extends AppCompatActivity{
             }
         });
     }
+
+    private void refresh() {
+        Handler handler = new Handler();
+        timedTask = new Runnable() {
+            @Override
+            public void run() {
+                loadWeatherInfo();
+                handler.postDelayed(timedTask, 5000);
+                // refresh();
+            }
+        };
+        handler.post(timedTask);
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Đọc ID theme đã lưu, nếu chưa lưu thì dùng R.style.MyAppTheme
         SharedPreferences locationpref = getApplicationContext()
                 .getSharedPreferences(FILE_USER, MODE_PRIVATE);
-        themeIdcurrent = locationpref.getInt(FILE_MODE_THEME,R.style.AppTheme);
-        Log.d("themss",themeIdcurrent+"");
+        themeIdcurrent = locationpref.getInt(FILE_MODE_THEME, R.style.AppTheme);
+        Log.d("themss", themeIdcurrent + "");
         //Thiết lập theme cho Activity
         setTheme(themeIdcurrent);
         setContentView(R.layout.activity_main);
@@ -117,16 +137,47 @@ public class MainActivity extends AppCompatActivity{
 
 // load data
         loadWeatherInfo();
-
+        refresh() ;
         imageLight = findViewById(R.id.imageLight);
         switchLight = findViewById(R.id.switchLight);
+        imageWaterring = findViewById(R.id.imageWatering);
+        switchWatering = findViewById(R.id.switchWatering);
+        tvTemperatureValue = findViewById(R.id.textTemperatureValue);
+        tvHumidityValue = findViewById(R.id.textHumidityValue);
 
+        interfaceNetwork.controls().enqueue(new Callback<List<StatusInfo>>() {
+            @Override
+            public void onResponse(Call<List<StatusInfo>> call, Response<List<StatusInfo>> response) {
+                List<StatusInfo> stts = response.body();
+                statusInfos = response.body().get(0);
+                Log.d("xxxxxxxxxxxxxxxxxxx", response.body().toString());
+                idLed = statusInfos.getId();
+                statusLed = statusInfos.getStatusLed();
 
-        Led led = new Led(16,"on");
-        if(led.getValue() == "on"){
+                statusInfos = response.body().get(stts.size()-1);
+                Log.d("xxxxxxxxxxxxxxxxxxx", response.body().toString());
+                idSprinkler = statusInfos.getId();
+                statusSprinkler = statusInfos.getStatusLed();
+            }
+
+            @Override
+            public void onFailure(Call<List<StatusInfo>> call, Throwable t) {
+                t.printStackTrace();
+                Log.d("xxxxxxxxxxxxxxxxxxx", t.getMessage());
+                idLed = 16;
+                statusLed = "off";
+                idSprinkler = 17;
+                statusSprinkler = "off";
+            }
+        });
+
+        Led led = new Led(idLed,statusLed);
+        Sprinkler sprinkler= new Sprinkler(idSprinkler,statusSprinkler);
+
+        if (led.getValue() == "on") {
             switchLight.setChecked(true);
             imageLight.setImageResource(R.drawable.ic_light_on);
-        }else {
+        } else {
             switchLight.setChecked(false);
             imageLight.setImageResource(R.drawable.ic_light_off);
         }
@@ -136,15 +187,17 @@ public class MainActivity extends AppCompatActivity{
                 if (isChecked) {
                     led.setValue("on");
                     imageLight.setImageResource(R.drawable.ic_light_on);
-                    interfaceNetwork.turnOnLed().enqueue(new Callback<Void>(){
+                    interfaceNetwork.turnOnLed(led.getId(), led.getValue()).enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
-                            Toast.makeText(MainActivity.this, "Bật thành công", Toast.LENGTH_SHORT).show();;
+                            Toast.makeText(MainActivity.this, "Bật thành công", Toast.LENGTH_SHORT).show();
+                            ;
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
-                            Toast.makeText(MainActivity.this, "Bật không thành công", Toast.LENGTH_SHORT).show();;
+                            Toast.makeText(MainActivity.this, "Bật không thành công", Toast.LENGTH_SHORT).show();
+                            ;
                         }
                     });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
@@ -158,19 +211,21 @@ public class MainActivity extends AppCompatActivity{
                             switchLight.setEnabled(true);
                         }
                     };
-                    countDownTimer.start() ;
+                    countDownTimer.start();
                 } else {
                     led.setValue("off");
                     imageLight.setImageResource(R.drawable.ic_light_off);
-                    interfaceNetwork.turnOffLed().enqueue(new Callback<Void>(){
+                    interfaceNetwork.turnOffLed(led.getId(), led.getValue()).enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
-                            Toast.makeText(MainActivity.this, "Tắt thành công", Toast.LENGTH_SHORT).show();;
+                            Toast.makeText(MainActivity.this, "Tắt thành công", Toast.LENGTH_SHORT).show();
+                            ;
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
-                            Toast.makeText(MainActivity.this, "Tắt không thành công", Toast.LENGTH_SHORT).show();;
+                            Toast.makeText(MainActivity.this, "Tắt không thành công", Toast.LENGTH_SHORT).show();
+                            ;
                         }
                     });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
@@ -184,21 +239,15 @@ public class MainActivity extends AppCompatActivity{
                             switchLight.setEnabled(true);
                         }
                     };
-                    countDownTimer.start() ;
+                    countDownTimer.start();
                 }
             }
         });
 
-        imageWaterring = findViewById(R.id.imageWatering);
-        switchWatering = findViewById(R.id.switchWatering);
-        tvTemperatureValue = findViewById(R.id.textTemperatureValue);
-        tvHumidityValue = findViewById(R.id.textHumidityValue);
-
-        Sprinkler sprinkler = new Sprinkler(16,"on");
-        if(led.getValue() == "on"){
+        if (sprinkler.getValue() == "on") {
             switchWatering.setChecked(true);
             imageWaterring.setImageResource(R.drawable.ic_sprinkler_on);
-        }else {
+        } else {
             switchWatering.setChecked(false);
             imageWaterring.setImageResource(R.drawable.ic_sprinkler_off);
         }
@@ -208,15 +257,17 @@ public class MainActivity extends AppCompatActivity{
                 if (isChecked) {
                     sprinkler.setValue("on");
                     imageWaterring.setImageResource(R.drawable.ic_sprinkler_on);
-                    interfaceNetwork.turnOnSprinkler().enqueue(new Callback<Void>(){
+                    interfaceNetwork.turnOnSprinkler(sprinkler.getId(), sprinkler.getValue()).enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
-                            Toast.makeText(MainActivity.this, "Bật thành công", Toast.LENGTH_SHORT).show();;
+                            Toast.makeText(MainActivity.this, "Bật thành công", Toast.LENGTH_SHORT).show();
+                            ;
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
-                            Toast.makeText(MainActivity.this, "Bật không thành công", Toast.LENGTH_SHORT).show();;
+                            Toast.makeText(MainActivity.this, "Bật không thành công", Toast.LENGTH_SHORT).show();
+                            ;
                         }
                     });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
@@ -230,19 +281,21 @@ public class MainActivity extends AppCompatActivity{
                             switchWatering.setEnabled(true);
                         }
                     };
-                    countDownTimer.start() ;
+                    countDownTimer.start();
                 } else {
                     sprinkler.setValue("off");
                     imageWaterring.setImageResource(R.drawable.ic_sprinkler_off);
-                    interfaceNetwork.turnOffSprinkler().enqueue(new Callback<Void>(){
+                    interfaceNetwork.turnOffSprinkler(sprinkler.getId(), sprinkler.getValue()).enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
-                            Toast.makeText(MainActivity.this, "Tắt thành công", Toast.LENGTH_SHORT).show();;
+                            Toast.makeText(MainActivity.this, "Tắt thành công", Toast.LENGTH_SHORT).show();
+                            ;
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
-                            Toast.makeText(MainActivity.this, "Tắt không thành công", Toast.LENGTH_SHORT).show();;
+                            Toast.makeText(MainActivity.this, "Tắt không thành công", Toast.LENGTH_SHORT).show();
+                            ;
                         }
                     });
                     CountDownTimer countDownTimer = new CountDownTimer(1000, 20) {
@@ -256,7 +309,7 @@ public class MainActivity extends AppCompatActivity{
                             switchWatering.setEnabled(true);
                         }
                     };
-                    countDownTimer.start() ;
+                    countDownTimer.start();
                 }
             }
         });
@@ -273,7 +326,7 @@ public class MainActivity extends AppCompatActivity{
         switch (item.getItemId()) {
             case R.id.changeDarkTheme:
                 //Chuyển đổi theme
-                themeIdcurrent = themeIdcurrent == R.style.AppTheme ?  R.style.Theme_AppCompat :R.style.AppTheme;
+                themeIdcurrent = themeIdcurrent == R.style.AppTheme ? R.style.Theme_AppCompat : R.style.AppTheme;
 
                 //Lưu lại theme ID
                 SharedPreferences locationpref = getApplicationContext()
