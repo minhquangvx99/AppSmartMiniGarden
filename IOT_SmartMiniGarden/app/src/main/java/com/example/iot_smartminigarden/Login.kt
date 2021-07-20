@@ -30,7 +30,7 @@ class Login : AppCompatActivity() {
         interfaceNetwork = MainActivity.retrofit.create(InterfaceNetwork::class.java)
         textWarning.text = ""
         btnLogin.setOnClickListener(){
-            if (inputUsername.text.toString().trim().length>0 && inputPassword.text.toString().trim().length>0){
+            /*if (inputUsername.text.toString().trim().length>0 && inputPassword.text.toString().trim().length>0){
                 doSave(inputUsername.text.toString().trim(), inputPassword.text.toString().trim(), "true");
                 textWarning.setTextColor(Color.GREEN)
                 textWarning.text = "Đăng nhập Thành công"
@@ -40,7 +40,25 @@ class Login : AppCompatActivity() {
             else{
                 textWarning.setTextColor(Color.WHITE)
                 textWarning.text = "Vui lòng nhập đủ thông tin"
+            }*/
+            if (inputUsername.text.toString().trim().length>0 && inputPassword.text.toString().trim().length>0){
+                if(inputUsername.text.toString().trim() == FILE_USER_NAME && inputPassword.text.toString().trim() == FILE_USER_PASS){
+                    doSave(inputUsername.text.toString().trim(), inputPassword.text.toString().trim(), "true");
+                    textWarning.setTextColor(Color.GREEN)
+                    textWarning.text = "Đăng nhập Thành công"
+                    startActivity(Intent(this@Login,MainActivity::class.java))
+                    finish()
+                } else{
+                    textWarning.setTextColor(Color.RED)
+                    textWarning.text = "Đăng nhập thất bại"
+                    doSaveShared(FILE_USER_TOKEN_SESSION,"false");
+                }
             }
+            else{
+                textWarning.setTextColor(Color.WHITE)
+                textWarning.text = "Vui lòng nhập đủ thông tin"
+            }
+
         }
     }
     private fun loadToken() : String? {

@@ -352,9 +352,5 @@ public class MainActivity extends AppCompatActivity {
         // Save.
         editor.apply();
     }
-
-    public void timer(View view) {
-
-    }
 }
 

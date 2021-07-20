@@ -132,37 +132,11 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <EditText
-        android:id="@+id/editTextTime"
-        android:layout_width="0dp"
-        android:layout_height="49dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
-        android:hint="Nhập thời gian (s)"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toStartOf="@+id/btnTimer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardviewLed" />
-
-    <Button
-        android:id="@+id/btnTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:onClick="timer"
-        android:text="Hẹn giờ Tắt/Bật đèn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardviewLed" />
-
     <TextView
         android:id="@+id/textSprinklers"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="8dp"
         android:text="Hệ thống tưới cây"
         android:textSize="20sp"
@@ -170,7 +144,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTime" />
+        app:layout_constraintTop_toBottomOf="@+id/cardviewLed" />
 
     <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/cardviewSprinkler"
